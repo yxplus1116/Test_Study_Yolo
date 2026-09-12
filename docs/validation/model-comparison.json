@@ -1,0 +1,103 @@
+{
+  "onnx_checker": "passed",
+  "reference": "1.20.1",
+  "cases": [
+    {
+      "image": "car.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.06678760051727295,
+      "coordinate_max_error": 3.69403076171875,
+      "score_mae": 0.0005523249274119735,
+      "score_max_error": 0.01572638750076294,
+      "reference_boxes": 1,
+      "tensorrt_boxes": 1,
+      "minimum_matched_iou": 0.9939954280853271,
+      "passed": true
+    },
+    {
+      "image": "gril.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.07126748561859131,
+      "coordinate_max_error": 8.45123291015625,
+      "score_mae": 0.00042119764839299023,
+      "score_max_error": 0.06464362144470215,
+      "reference_boxes": 1,
+      "tensorrt_boxes": 1,
+      "minimum_matched_iou": 0.9977838397026062,
+      "passed": true
+    },
+    {
+      "image": "group.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.06409783661365509,
+      "coordinate_max_error": 5.296295166015625,
+      "score_mae": 0.0005918036331422627,
+      "score_max_error": 0.024022281169891357,
+      "reference_boxes": 0,
+      "tensorrt_boxes": 0,
+      "minimum_matched_iou": null,
+      "passed": true
+    },
+    {
+      "image": "yq.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.06888021528720856,
+      "coordinate_max_error": 4.7843017578125,
+      "score_mae": 0.0004890889977104962,
+      "score_max_error": 0.0245896577835083,
+      "reference_boxes": 0,
+      "tensorrt_boxes": 0,
+      "minimum_matched_iou": null,
+      "passed": true
+    },
+    {
+      "image": "zand.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.07272592931985855,
+      "coordinate_max_error": 5.04290771484375,
+      "score_mae": 0.000735721958335489,
+      "score_max_error": 0.016684293746948242,
+      "reference_boxes": 2,
+      "tensorrt_boxes": 2,
+      "minimum_matched_iou": 0.9960575103759766,
+      "passed": true
+    },
+    {
+      "image": "zgjr.jpg",
+      "shape": [
+        1,
+        25200,
+        7
+      ],
+      "coordinate_mae": 0.07043035328388214,
+      "coordinate_max_error": 6.720947265625,
+      "score_mae": 0.0006377625977620482,
+      "score_max_error": 0.02395874261856079,
+      "reference_boxes": 2,
+      "tensorrt_boxes": 2,
+      "minimum_matched_iou": 0.9983229637145996,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

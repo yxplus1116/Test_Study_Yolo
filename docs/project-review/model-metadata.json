@@ -1,0 +1,180 @@
+{
+  "inspection_scope": "protobuf metadata only; no ONNX checker or inference executed",
+  "file": "D:/Projects/Test_Study_Yolo/workspace/cf.onnx",
+  "size_bytes": 7275262,
+  "sha256": "fad9d8b0dbdc74f7312d711d4b0e27ad3c96fa5564682b159dcad83a96f14cf4",
+  "ir_version": 7,
+  "producer_name": "pytorch",
+  "producer_version": "1.10",
+  "opsets": [
+    {
+      "domain": "",
+      "version": 11
+    }
+  ],
+  "graph_name": "torch-jit-export",
+  "inputs": [
+    {
+      "name": "images",
+      "element_type": 1,
+      "shape": [
+        "batch",
+        3,
+        640,
+        640
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "element_type": 1,
+      "shape": [
+        "batch",
+        25200,
+        7
+      ]
+    },
+    {
+      "name": "329",
+      "element_type": 1,
+      "shape": [
+        "Transpose329_dim_0",
+        3,
+        80,
+        80,
+        7
+      ]
+    },
+    {
+      "name": "372",
+      "element_type": 1,
+      "shape": [
+        "Transpose329_dim_0",
+        3,
+        40,
+        40,
+        7
+      ]
+    },
+    {
+      "name": "415",
+      "element_type": 1,
+      "shape": [
+        "Transpose329_dim_0",
+        3,
+        20,
+        20,
+        7
+      ]
+    }
+  ],
+  "metadata": {},
+  "node_count": 304,
+  "operator_counts": {
+    "Add": 10,
+    "Concat": 17,
+    "Constant": 59,
+    "Conv": 60,
+    "MaxPool": 3,
+    "Mul": 69,
+    "Pow": 3,
+    "Reshape": 6,
+    "Resize": 2,
+    "Sigmoid": 60,
+    "Slice": 9,
+    "Sub": 3,
+    "Transpose": 3
+  },
+  "initializer_count": 128,
+  "initializer_element_count_not_trainable_parameter_count": 1761900,
+  "initializer_dtype_counts": {
+    "1": 128
+  },
+  "last_nodes": [
+    {
+      "name": "Mul_292",
+      "op": "Mul",
+      "outputs": [
+        "442"
+      ]
+    },
+    {
+      "name": "Pow_293",
+      "op": "Pow",
+      "outputs": [
+        "445"
+      ]
+    },
+    {
+      "name": "Mul_294",
+      "op": "Mul",
+      "outputs": [
+        "446"
+      ]
+    },
+    {
+      "name": "Constant_295",
+      "op": "Constant",
+      "outputs": [
+        "447"
+      ]
+    },
+    {
+      "name": "Constant_296",
+      "op": "Constant",
+      "outputs": [
+        "448"
+      ]
+    },
+    {
+      "name": "Constant_297",
+      "op": "Constant",
+      "outputs": [
+        "449"
+      ]
+    },
+    {
+      "name": "Constant_298",
+      "op": "Constant",
+      "outputs": [
+        "450"
+      ]
+    },
+    {
+      "name": "Slice_299",
+      "op": "Slice",
+      "outputs": [
+        "451"
+      ]
+    },
+    {
+      "name": "Concat_300",
+      "op": "Concat",
+      "outputs": [
+        "452"
+      ]
+    },
+    {
+      "name": "Constant_301",
+      "op": "Constant",
+      "outputs": [
+        "453"
+      ]
+    },
+    {
+      "name": "Reshape_302",
+      "op": "Reshape",
+      "outputs": [
+        "454"
+      ]
+    },
+    {
+      "name": "Concat_303",
+      "op": "Concat",
+      "outputs": [
+        "output"
+      ]
+    }
+  ]
+}

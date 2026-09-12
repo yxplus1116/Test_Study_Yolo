@@ -1,0 +1,75 @@
+﻿[
+    {
+        "name":  "GPU 模型基准（300 帧）",
+        "summary":  {
+                        "mode":  "gpu_benchmark",
+                        "device":  "NVIDIA GeForce RTX 3060 Ti",
+                        "warmup":  30,
+                        "iterations":  300,
+                        "gpu_mean_ms":  0.872271,
+                        "gpu_fps":  1146.43,
+                        "input_enabled":  false
+                    },
+        "output":  "D:\\Projects\\Test_Study_Yolo\\.local\\runlogs\\menu-performance-20260912-222323-363"
+    },
+    {
+        "name":  "GDI 端到端基准（8 秒）",
+        "summary":  {
+                        "mode":  "live",
+                        "capture":  "gdi",
+                        "headless":  true,
+                        "device":  "NVIDIA GeForce RTX 3060 Ti",
+                        "label":  1,
+                        "frames":  717,
+                        "elapsed_seconds":  8.00698,
+                        "fps":  89.5469,
+                        "empty_captures":  0,
+                        "capture_errors":  0,
+                        "sent_count":  0,
+                        "input_enabled":  false,
+                        "average_ms":  {
+                                           "capture":  4.85982,
+                                           "preprocess":  3.57393,
+                                           "upload":  0.466738,
+                                           "gpu_inference":  1.27941,
+                                           "download":  0.130996,
+                                           "postprocess":  0.564144,
+                                           "inference_total":  6.21888,
+                                           "render":  3.33333E-05,
+                                           "gui_wait":  0,
+                                           "processed_loop":  11.0898
+                                       }
+                    },
+        "output":  "D:\\Projects\\Test_Study_Yolo\\.local\\runlogs\\menu-performance-20260912-222324-047"
+    },
+    {
+        "name":  "DXGI 端到端基准（8 秒）",
+        "summary":  {
+                        "mode":  "live",
+                        "capture":  "dxgi",
+                        "headless":  true,
+                        "device":  "NVIDIA GeForce RTX 3060 Ti",
+                        "label":  1,
+                        "frames":  30,
+                        "elapsed_seconds":  8.0216,
+                        "fps":  3.7399,
+                        "empty_captures":  235,
+                        "capture_errors":  0,
+                        "sent_count":  0,
+                        "input_enabled":  false,
+                        "average_ms":  {
+                                           "capture":  8.31388,
+                                           "preprocess":  7.10938,
+                                           "upload":  0.671114,
+                                           "gpu_inference":  2.95192,
+                                           "download":  0.149238,
+                                           "postprocess":  0.55568,
+                                           "inference_total":  11.7346,
+                                           "render":  2.66667E-05,
+                                           "gui_wait":  0,
+                                           "processed_loop":  20.3255
+                                       }
+                    },
+        "output":  "D:\\Projects\\Test_Study_Yolo\\.local\\runlogs\\menu-performance-20260912-222332-435"
+    }
+]

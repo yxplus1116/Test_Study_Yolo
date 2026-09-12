@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-12T03:01:52.8515314+08:00",
+  "os": "Microsoft Windows NT 10.0.19045.0",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti, 8 GiB",
+  "driver": "560.94",
+  "msvc": "19.38.33145 (VS Build Tools 2022 17.14.40)",
+  "cuda": "12.6.3",
+  "tensorrt": "10.6.0.post2",
+  "opencv": "4.10.0",
+  "model_sha256": "FAD9D8B0DBDC74F7312D711D4B0E27AD3C96FA5564682B159DCAD83A96F14CF4",
+  "executable_sha256": "68A9F02719AB512F2D03B701677B7CEE73C116F562DE31250B18E8F344E74FD8",
+  "monitor": "DISPLAY1 2560x1440 physical pixels",
+  "calibration": {
+    "units_per_pixel_x": 0.7619047619047619,
+    "units_per_pixel_y": 0.7619047619047619,
+    "mouse_speed": 10,
+    "mouse_acceleration": 1,
+    "step_units": 16,
+    "reversible": true
+  }
+}

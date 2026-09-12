@@ -1,0 +1,2 @@
+frame,total_ms,boxes,target_valid,dx,dy,lost_frames,candidate_count,capture_ms,preprocess_ms,upload_ms,gpu_inference_ms,download_ms,postprocess_ms,inference_total_ms,render_ms,gui_wait_ms,label
+1,41.3829,2,1,68.5625,-114.094,0,2,0.0003,4.8626,1.48784,34.0952,0.128896,0.5526,41.3592,0,0,1

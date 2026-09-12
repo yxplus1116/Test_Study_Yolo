@@ -1,0 +1,25 @@
+%YAML:1.0
+---
+# Class semantics are model-specific: verify body=0 / head=1 with labeled samples.
+label: 0
+monitor: 0
+capture_size: 416
+confidence: 0.50
+minimum_iou: 0.20
+confidence_weight: 0.25
+body_y_fraction: 0.35
+max_lost_frames: 5
+nms: 0.45
+# Gains act on physical capture-pixel error; integral and derivative use seconds.
+kp: 0.30
+ki: 0.05
+kd: 0.002
+integral_limit: 50.0
+output_limit: 12.0
+dead_zone: 0.75
+period_ms: 8
+max_age_ms: 100
+# Additional application-specific sensitivity factors, multiplied by calibration.
+units_per_pixel_x: 1.0
+units_per_pixel_y: 1.0
+calibration_file: "config/calibration.yml"

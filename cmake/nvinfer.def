@@ -1,0 +1,6 @@
+LIBRARY nvinfer_10.dll
+EXPORTS
+    createInferBuilder_INTERNAL
+    createInferRuntime_INTERNAL
+    getInferLibVersion
+    getPluginRegistry

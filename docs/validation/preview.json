@@ -1,0 +1,14 @@
+{
+  "title": "TestStudyYolo",
+  "wm_close_posted": true,
+  "exit_code": 0,
+  "close_ms": 65,
+  "summary": {
+    "frames": 42,
+    "elapsed_seconds": 1.78626,
+    "fps": 23.5128,
+    "empty_captures": 0,
+    "capture_errors": 0,
+    "input_enabled": false
+  }
+}

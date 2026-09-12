@@ -1,0 +1,4 @@
+LIBRARY nvonnxparser_10.dll
+EXPORTS
+    createNvOnnxParser_INTERNAL
+    getNvOnnxParserVersion

@@ -1,0 +1,49 @@
+[
+  {
+    "name": "missing-model",
+    "passed": true,
+    "exitCode": 1,
+    "expected": 1
+  },
+  {
+    "name": "invalid-monitor",
+    "passed": true,
+    "exitCode": 1,
+    "expected": 1
+  },
+  {
+    "name": "offline-input-rejected",
+    "passed": true,
+    "exitCode": 1,
+    "expected": 1
+  },
+  {
+    "name": "image-dry-run",
+    "passed": true,
+    "exitCode": 0,
+    "expected": 0
+  },
+  {
+    "name": "dxgi",
+    "passed": true,
+    "exitCode": 0,
+    "expected": 0
+  },
+  {
+    "name": "gdi",
+    "passed": true,
+    "exitCode": 0,
+    "expected": 0
+  },
+  {
+    "name": "graceful-shutdown",
+    "passed": true,
+    "exitCode": 0,
+    "milliseconds": 188
+  },
+  {
+    "name": "engine-build-cancellation",
+    "passed": true,
+    "exitCode": 0
+  }
+]

@@ -1,39 +1,59 @@
 #pragma once
-#include<iostream>
-#include<windows.h>
-#include<opencv2/opencv.hpp>
-#include<math.h>
+#include <chrono>
+#include <condition_variable>
+#include <cstdint>
+#include <functional>
 #include <mutex>
+#include <thread>
 
-#pragma comment  (lib,"User32.lib")
-#pragma comment  (lib,"Gdi32.lib")
-
-class pid_move
-{
+using SteadyClock = std::chrono::steady_clock;
+struct TargetUpdate {
+    bool valid=false, reset=false;
+    double dx=0, dy=0;
+    std::uint64_t frame=0;
+    SteadyClock::time_point captured{};
+};
+struct PidSettings {
+    double kp=0.3, ki=0.05, kd=0.002;
+    double integral_limit=50, output_limit=12, dead_zone=0.75;
+    double units_per_pixel_x=1, units_per_pixel_y=1;
+    int period_ms=8, max_age_ms=100;
+};
+struct Movement { int x=0, y=0; std::uint64_t frame=0; };
+class PidController {
 public:
-    std::mutex data_mutex_;
-    std::condition_variable data_cond_;
-    bool data_ready_ = false;
-    double target_position_x;
-    double target_position_y;
-    void move();
-    static void receiveWrapper2(pid_move* pid) {
-        pid->move();
-    }
-    static void receiveWrapper3(pid_move* mouse_smooth) {
-        mouse_smooth->smooth();
-    }
-    void init(double kp, double ki, double kd);
-    void refresh();
-    void smooth();
-    double move_distance_x = 0;
-    double move_distance_y = 0;
+    explicit PidController(PidSettings settings={});
+    Movement step(const TargetUpdate& target,double dt);
+    void reset();
+    double integral_x() const { return x_.integral; }
 private:
-    double Kp = 0.3;
-    double Ki = 0.1;
-    double Kd = 0.2;
-    double error_x, integral_x = 0.0, derivative_x, last_error_x = 0.0;
-    double error_y, integral_y = 0.0, derivative_y, last_error_y = 0.0;
-
-    bool is_moving = false;
+    struct Axis { double integral=0,previous=0,residual=0; bool initialized=false; };
+    int step_axis(Axis& axis,double error,double dt,double scale);
+    PidSettings settings_;
+    Axis x_,y_;
+};
+// Only the worker owns PID state and dispatches output. Measurements are
+// consumed at most once; faster producers replace pending measurements.
+class ControlWorker {
+public:
+    using Output=std::function<bool(const Movement&)>;
+    ControlWorker(PidSettings settings,Output output);
+    ~ControlWorker();
+    ControlWorker(const ControlWorker&)=delete;
+    ControlWorker& operator=(const ControlWorker&)=delete;
+    void publish(TargetUpdate target);
+    void cancel();
+    void stop();
+    bool output_failed() const;
+private:
+    void run();
+    PidSettings settings_;
+    Output output_;
+    PidController pid_;
+    mutable std::mutex mutex_;
+    std::condition_variable changed_;
+    TargetUpdate latest_;
+    std::uint64_t revision_=0;
+    bool stopping_=false,failed_=false;
+    std::thread worker_;
 };

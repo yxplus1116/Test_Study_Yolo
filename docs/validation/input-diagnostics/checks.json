@@ -1,0 +1,17 @@
+{
+  "checked": "2026-09-12T23:25:54.6730982+08:00",
+  "core_regressions": "passed",
+  "menu_checks": 68,
+  "offline_frames": 20,
+  "offline_context_samples": 1,
+  "offline_control_callbacks": 10,
+  "live_frames": 266,
+  "live_context_samples": 3,
+  "sender_integrity": "medium",
+  "sender_elevated": false,
+  "input_enabled": false,
+  "send_attempts": 0,
+  "send_failures": 0,
+  "sent_count": 0,
+  "scope": "Diagnostic output and existing lifecycle only; target application compatibility not reproduced"
+}

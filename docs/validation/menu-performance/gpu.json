@@ -1,0 +1,1 @@
+{"mode":"gpu_benchmark","device":"NVIDIA GeForce RTX 3060 Ti","warmup":30,"iterations":600,"gpu_mean_ms":0.972631,"gpu_fps":1028.14,"input_enabled":false}

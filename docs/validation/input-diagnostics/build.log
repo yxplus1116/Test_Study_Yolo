@@ -1,0 +1,26 @@
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.40
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+  正在创建库 .local\import-libs\nvinfer.lib 和对象 .local\import-libs\nvinfer.exp
+  正在创建库 .local\import-libs\nvonnxparser.lib 和对象 .local\import-libs\nvonnxparser.exp
+-- OpenCV ARCH: x64
+-- OpenCV RUNTIME: vc16
+-- OpenCV STATIC: OFF
+-- Found OpenCV 4.10.0 in D:/Projects/Test_Study_Yolo/.local/opencv-dist/opencv/build/x64/vc16/lib
+-- You might need to add D:\Projects\Test_Study_Yolo\.local\opencv-dist\opencv\build\x64\vc16\bin to your PATH to be able to run your applications.
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: D:/Projects/Test_Study_Yolo/build
+[1/2] Building CXX object CMakeFiles\TestStudyYolo.dir\src\config.cpp.obj
+[2/2] Linking CXX executable TestStudyYolo.exe
+Internal ctest changing into directory: D:/Projects/Test_Study_Yolo/build
+Test project D:/Projects/Test_Study_Yolo/build
+    Start 1: core_regressions
+1/1 Test #1: core_regressions .................   Passed    0.19 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.19 sec
+Deployed to D:\Projects\Test_Study_Yolo\dist. Open start.cmd for the menu; scripts/run.ps1 is the advanced CLI.

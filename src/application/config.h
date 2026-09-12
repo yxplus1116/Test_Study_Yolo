@@ -1,39 +1,18 @@
-#include<iostream>
-#include<windows.h>
-#include<opencv2/opencv.hpp>
-#include <dxgi-cap.h>
-#include <builder/trt_builder.hpp>
-#include <infer/trt_infer.hpp>
-#include <common/ilogger.hpp>
-#include "app_yolo/yolo.hpp"
-#include "app_yolo/multi_gpu.hpp"
-
-#include<mouse.h>
-
-#define X_ 1
-#define Y_ 2
-
-class options
-{
-private:
-	string model_file = "cf.FP16.trtmodel";
-	dxgi_cap dxgi;
-	dc_cap dc;
-	bool is_recognition_active;
-	// 在 options 类中增加两个变量来记录方向键左键和右键的按下状态
-	bool left_key_pressed = false;
-	bool right_key_pressed = false;
-	
-	int capture = 1;
-public:
-	mouse_control mouse;
-	void init();
-	static void sendWrapper(options* option)
-	{
-		option->main_function();
-	}
-	int is_show_windows = 0;
-	void main_function();
-	void draw_objects(Mat img, ObjectDetector::BoxArray box, int is_head);
+#pragma once
+#include "mouse.h"
+#include <string>
+struct AppOptions {
+    PidSettings pid;
+    TrackingSettings tracking;
+    std::string config="config/default.yml",model="workspace/cf.onnx",cache=".local/engines";
+    std::string capture="dxgi",image,video,output=".local/runlogs",calibration_file="config/calibration.yml";
+    std::string tensor_dump,stop_file;
+    int monitor=0,size=416,label=0,frames=0;
+    double seconds=0;
+    float nms=0.45f;
+    bool headless=false,enable_input=false,rebuild=false,fp32=false,list_monitors=false;
+    bool calibrate=false,help=false,calibrated=false,benchmark=false;
 };
-
+AppOptions parse_options(int argc,char** argv);
+int run_application(const AppOptions& options);
+void print_help();

@@ -1,0 +1,54 @@
+{
+  "commit": "b27431a4c7afceec0bef73884dda576c16b8c5bc",
+  "tracked_files": 996,
+  "application_core_files": 9,
+  "application_core_lines": 815,
+  "project_references": [
+    {
+      "project": "TensorRT.vcxproj",
+      "source_header_reference_count": 132,
+      "missing_relative_to_project_file": [],
+      "missing_count": 0
+    },
+    {
+      "project": "windows/TensorRT.vcxproj",
+      "source_header_reference_count": 124,
+      "missing_relative_to_project_file": [
+        "src\\application\\app_alphapose.cpp",
+        "src\\application\\app_alphapose\\alpha_pose.cpp",
+        "src\\application\\app_alphapose_old\\alpha_pose_old.cpp",
+        "src\\application\\app_arcface.cpp",
+        "src\\application\\app_arcface\\arcface.cpp",
+        "src\\application\\app_centernet.cpp",
+        "src\\application\\app_centernet\\centernet.cpp",
+        "src\\application\\app_dbface.cpp",
+        "src\\application\\app_dbface\\dbface.cpp",
+        "src\\application\\app_fall_gcn\\fall_gcn.cpp"
+      ],
+      "missing_count": 124
+    }
+  ],
+  "application_source_encoding": {
+    "src/main.cpp": "Not valid UTF-8; GBK decoding used for review",
+    "src/config.cpp": "Not valid UTF-8; GBK decoding used for review",
+    "src/dxgi-cap.cpp": "Not valid UTF-8; GBK decoding used for review",
+    "src/mouse.cpp": "UTF-8 compatible",
+    "src/pid.cpp": "Not valid UTF-8; GBK decoding used for review",
+    "src/application/config.h": "Not valid UTF-8; GBK decoding used for review",
+    "src/application/dxgi-cap.h": "Not valid UTF-8; GBK decoding used for review",
+    "src/application/mouse.h": "Not valid UTF-8; GBK decoding used for review",
+    "src/application/pid.h": "UTF-8 compatible"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 3060 Ti",
+    "driver_version": "560.94",
+    "memory_MiB": 8192
+  },
+  "build_observation": "cmake, nvcc, cl and msbuild not found on current PATH; configured CUDA 11.6 props absent; lean contains README.md only",
+  "verification_limits": [
+    "No native build or application run",
+    "No TensorRT engine generation or GPU inference",
+    "No ONNX checker, accuracy evaluation or FPS benchmark",
+    "windows/ project is documented as a template to copy upward; its direct-relative missing references are expected, but copying would overwrite newer root configuration"
+  ]
+}

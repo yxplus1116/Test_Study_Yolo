@@ -1,37 +1,27 @@
-#define NOMINMAX
-#include<iostream>
-#include<windows.h>
-#include<opencv2/opencv.hpp>
-#include<math.h>
-#include<pid.h>
-#include <common/object_detector.hpp>
-
-using cv::Mat;
-using std::cout;
-using std::endl;
-#define KEY_DOWN(VK_NONAME) ((GetAsyncKeyState(VK_NONAME) & 0x8000) ? 1:0)
-
-
-
-class mouse_control
-{
-private:
-
-	float offset_x = 0;
-	float offset_y = 0;
-	std::mutex data_mutex_;
-	std::condition_variable data_cond_;
-	bool data_ready_ = false;
-	float pi = 3.1416;
+#pragma once
+#include "common/object_detector.hpp"
+#include "pid.h"
+#include <optional>
+struct TrackingSettings {
+    float confidence=0.5f,minimum_iou=0.2f;
+    float confidence_weight=0.25f,body_y_fraction=0.35f;
+    int max_lost_frames=5;
+};
+class TargetTracker {
 public:
-	int aims_last_num = 0;
-	int lost_frame = 0;
-	float cal_iou(cv::Rect rect1, cv::Rect rect2,float scale);
-	bool is_first_frame = true;
-	cv::Rect aim;
-	pid_move pid;
-	int isHead = 0;//Ä¬ÈÏÎªÉí
-	int is_use_hardware = 0;
-	int is_auto_fire = 0;
-	int fire(Mat img, ObjectDetector::BoxArray box);
+    explicit TargetTracker(TrackingSettings settings={});
+    TargetUpdate update_target(const ObjectDetector::BoxArray& boxes,int width,int height,
+        int label,std::uint64_t frame,SteadyClock::time_point captured);
+    void reset();
+    int lost_frames() const{return lost_;}
+    int aims_last_num() const{return count_;}
+    const std::optional<ObjectDetector::Box>& selected_box() const{return selected_box_;}
+    static float iou(const ObjectDetector::Box& a,const ObjectDetector::Box& b);
+private:
+    TrackingSettings settings_;
+    ObjectDetector::Box target_{};
+    // Current-frame presentation metadata; retained tracking identity stays in target_.
+    std::optional<ObjectDetector::Box> selected_box_;
+    bool tracking_=false;
+    int label_=-1,lost_=0,count_=0;
 };
