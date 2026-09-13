@@ -113,7 +113,7 @@ cv::Mat render_preview(const cv::Mat& raw,const ObjectDetector::BoxArray& boxes,
     };
     line("TestStudyYolo  |  "+class_name(info.label)+"  |  "+(info.input_enabled?"INPUT ENABLED":"DETECTION ONLY"),23,
         info.input_enabled?cv::Scalar(80,190,255):cv::Scalar(150,225,170));
-    line("GPU: "+info.device+"  |  capture: "+info.capture,47);
+    line("GPU: "+info.device+"  |  capture: "+info.capture+"  |  mouse: "+info.mouse_backend,47);
     line(target_status_text(info,boxes,target),71,
         preview_target_state(info,boxes,target)==TargetState::Selected?cv::Scalar(80,230,130):cv::Scalar(100,195,255));
     line(output_status_text(info,target),95);

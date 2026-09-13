@@ -13,7 +13,7 @@ struct PreviewInfo {
     std::uint64_t frame=0,sent=0;
     Runtime::InferenceTimings timings;
     std::optional<ObjectDetector::Box> selected_box;
-    std::string device,capture="gdi";
+    std::string device,capture="gdi",mouse_backend="windows";
 };
 std::string class_name(int label);
 TargetState preview_target_state(const PreviewInfo& info,const ObjectDetector::BoxArray& boxes,const TargetUpdate& target);

@@ -73,7 +73,7 @@ function Show-Menu {
     }
     $other = @(Get-UnmanagedInstances $projectRoot $session)
     if ($other.Count) { Write-Host "另有直接启动的实例：PID $($other.Id -join ', ')；请先在原窗口退出。" -ForegroundColor Yellow }
-    Write-Host ("下次实时采集：{0} | 显示器 {1} | 中心区域 {2} × {2}" -f $settings.capture.ToUpper(),$settings.monitor,$settings.size)
+    Write-Host ("下次实时采集：{0} | 显示器 {1} | 中心区域 {2} × {2} | 鼠标后端 {3}" -f $settings.capture.ToUpper(),$settings.monitor,$settings.size,$settings.mouse_backend)
     Write-Host ''
     Write-Host '  1  头部识别预览                 2  身体识别预览'
     Write-Host '  3  头部识别 + 鼠标控制          4  身体识别 + 鼠标控制'
@@ -184,7 +184,8 @@ function Read-MenuNumber {
     }
 }
 function Edit-Settings {
-    Write-Host ' 1 GDI    2 DXGI    3 选择显示器    4 采集尺寸    5 恢复默认    0 返回'
+    Write-Host ' 1 GDI    2 DXGI    3 选择显示器    4 采集尺寸    5 恢复默认'
+    Write-Host ' 6 鼠标后端（Windows / MAKCU / none）    7 MAKCU 串口    0 返回'
     $option = Read-Host '设置编号'
     switch ($option) {
         '1' { $settings.capture = 'gdi' }
@@ -206,6 +207,16 @@ function Edit-Settings {
             $settings.size = $parsed
         }
         '5' { $settings.capture='gdi';$settings.monitor=0;$settings.size=416 }
+        '6' {
+            $value = Read-Host '鼠标后端（windows / makcu / none）'
+            if ($value -notin @('windows','makcu','none')) { throw '鼠标后端必须是 windows、makcu 或 none。' }
+            $settings.mouse_backend = $value
+        }
+        '7' {
+            $value = Read-Host 'MAKCU 串口（默认 COM3）'
+            if (!$value) { $value='COM3' }
+            $settings.makcu_port = $value.ToUpperInvariant()
+        }
         default { return }
     }
     New-Item -ItemType Directory -Path (Join-Path $projectRoot '.local') -Force | Out-Null

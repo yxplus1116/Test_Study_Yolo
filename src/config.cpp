@@ -3,6 +3,7 @@
 #include "runtime/trt_detector.h"
 #include "application/preview.h"
 #include "application/input_diagnostics.h"
+#include "application/makcu_mouse.h"
 #include <Windows.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui_c.h>
@@ -62,6 +63,9 @@ void load_config(AppOptions& o){
     read_value(f,"max_lost_frames",o.tracking.max_lost_frames);read_value(f,"nms",o.nms);
     read_value(f,"capture_size",o.size);read_value(f,"monitor",o.monitor);read_value(f,"label",o.label);
     read_value(f,"calibration_file",o.calibration_file);
+    read_value(f,"mouse_backend",o.mouse_backend);read_value(f,"makcu_port",o.makcu_port);
+    read_value(f,"makcu_protocol",o.makcu_protocol);read_value(f,"makcu_baud",o.makcu_baud);
+    read_value(f,"makcu_ack_timeout_ms",o.makcu_ack_timeout_ms);
 }
 void load_calibration(AppOptions& o){
     if(!fs::exists(o.calibration_file))return;
@@ -94,9 +98,15 @@ int calibrate(const AppOptions& o){
     PidSettings settings;settings.kp=1;settings.ki=0;settings.kd=0;settings.dead_zone=0;
     settings.output_limit=32;settings.units_per_pixel_x=settings.units_per_pixel_y=1;settings.max_age_ms=1000;
     std::atomic<int> completed{0};
+    std::unique_ptr<MakcuMouse> makcu;
+    if(o.mouse_backend=="makcu") {
+        makcu=std::make_unique<MakcuMouse>(o.makcu_port,o.makcu_baud,o.makcu_ack_timeout_ms,o.makcu_protocol);
+        makcu->connect();
+    }
     ControlWorker worker(settings,[&](const Movement& m){
         if(canceled())return false;
-        bool ok=dispatch_mouse(m);++completed;return ok;
+        bool ok=o.mouse_backend=="makcu" ? makcu->move(m) : dispatch_mouse(m);
+        ++completed;return ok;
     });
     int sequence=0;
     auto move=[&](int x,int y){
@@ -148,6 +158,9 @@ void print_help(){
       "  --image FILE | --video FILE   Offline detection; input disabled\n"
       "  --headless --frames N --seconds N --output DIRECTORY\n"
       "  --enable-input               Allow relative mouse output while LMB/RMB held\n"
+      "  --mouse-backend windows|makcu|none\n"
+      "  --makcu-port COM3 --makcu-protocol ascii --makcu-baud 115200 --makcu-ack-timeout-ms 500\n"
+      "  --makcu-test                Probe MAKCU without loading the model or moving the pointer\n"
       "  --calibrate                  Measure and save desktop mouse scaling\n"
       "  --benchmark --frames 300     GPU-only warmed-up engine benchmark\n"
       "  --config FILE --calibration FILE --cache DIRECTORY --rebuild --fp32\n"
@@ -173,14 +186,25 @@ AppOptions parse_options(int argc,char** argv){
         else if(arg=="--frames")o.frames=std::stoi(value());else if(arg=="--seconds")o.seconds=std::stod(value());
         else if(arg=="--image")o.image=value();else if(arg=="--video")o.video=value();
         else if(arg=="--output")o.output=value();else if(arg=="--calibration")o.calibration_file=value();
+        else if(arg=="--mouse-backend")o.mouse_backend=value();else if(arg=="--makcu-port")o.makcu_port=value();
+        else if(arg=="--makcu-protocol")o.makcu_protocol=value();else if(arg=="--makcu-baud")o.makcu_baud=std::stoi(value());
+        else if(arg=="--makcu-ack-timeout-ms")o.makcu_ack_timeout_ms=std::stoi(value());
         else if(arg=="--dump-tensors")o.tensor_dump=value();else if(arg=="--stop-file")o.stop_file=value();
         else if(arg=="--headless")o.headless=true;else if(arg=="--enable-input")o.enable_input=true;
         else if(arg=="--rebuild")o.rebuild=true;else if(arg=="--fp32")o.fp32=true;
         else if(arg=="--list-monitors")o.list_monitors=true;else if(arg=="--calibrate")o.calibrate=true;
         else if(arg=="--benchmark")o.benchmark=true;
+        else if(arg=="--makcu-test")o.makcu_test=true;
         else throw std::invalid_argument("Unknown option: "+arg);
     }
     if(o.capture!="dxgi" && o.capture!="gdi")throw std::invalid_argument("Capture must be dxgi or gdi");
+    if(o.mouse_backend!="windows" && o.mouse_backend!="makcu" && o.mouse_backend!="none")
+        throw std::invalid_argument("Mouse backend must be windows, makcu or none");
+    if(o.makcu_protocol!="ascii" && o.makcu_protocol!="binary")throw std::invalid_argument("MAKCU protocol must be ascii or binary");
+    if(o.makcu_baud<115200 || o.makcu_baud>4000000 || o.makcu_ack_timeout_ms<1 || o.makcu_ack_timeout_ms>5000)
+        throw std::invalid_argument("Invalid MAKCU serial settings");
+    if(o.makcu_test && o.mouse_backend!="makcu")
+        throw std::invalid_argument("--makcu-test requires --mouse-backend makcu");
     if(!o.image.empty() && !o.video.empty())throw std::invalid_argument("Choose image or video");
     if(o.enable_input && (!o.image.empty() || !o.video.empty()))throw std::invalid_argument("Offline input injection is disabled");
     if(o.benchmark && (o.enable_input || o.calibrate || !o.image.empty() || !o.video.empty()))
@@ -199,6 +223,13 @@ int run_application(const AppOptions& o){
             <<" origin=("<<m.left<<","<<m.top<<") physical pixels"<<std::endl;return 0;
     }
     if(o.calibrate)return calibrate(o);
+    if(o.makcu_test) {
+        MakcuMouse probe(o.makcu_port,o.makcu_baud,o.makcu_ack_timeout_ms,o.makcu_protocol);
+        probe.connect();
+        std::cout<<"MAKCU probe OK: port="<<probe.port()<<" baud="<<o.makcu_baud
+            <<" version="<<std::quoted(probe.version())<<std::endl;
+        return 0;
+    }
     auto should_stop=[&]{return stopping.load() || down(VK_ESCAPE) || (!o.stop_file.empty() && fs::exists(o.stop_file));};
     Runtime::Detector detector(o.model,o.cache,o.rebuild,o.fp32,should_stop);
     std::cout<<"GPU: "<<detector.device_name()<<"; TensorRT "<<(o.fp32?"FP32":"FP16")
@@ -237,20 +268,28 @@ int run_application(const AppOptions& o){
         <<"foreground_query_error,sender_pid,sender_integrity,sender_elevated,sender_query_error,"
         <<"foreground_is_preview,cursor_known,cursor_x,cursor_y,clip_known,clip_left,clip_top,clip_right,clip_bottom\n";
     auto sender=InputDiagnostics::process_info(GetCurrentProcessId());
-    std::cout<<"Input sender: pid="<<sender.pid<<" integrity="<<InputDiagnostics::integrity_name(sender.integrity_rid)
+    std::cout<<"Input process: pid="<<sender.pid<<" integrity="<<InputDiagnostics::integrity_name(sender.integrity_rid)
         <<" elevated="<<(sender.elevation_known?(sender.elevated?"yes":"no"):"unknown")
-        <<"; successful SendInput means Windows accepted the event, not target application response."<<std::endl;
+        <<"; mouse backend="<<o.mouse_backend<<std::endl;
     TargetTracker tracker(o.tracking);
     std::atomic<std::uint64_t> sent_count{0},attempt_count{0},send_failures{0};
     const auto diagnostics_started=SteadyClock::now();
     auto last_movement_flush=diagnostics_started;
+    std::unique_ptr<MakcuMouse> makcu;
+    if(o.mouse_backend=="makcu") {
+        makcu=std::make_unique<MakcuMouse>(o.makcu_port,o.makcu_baud,o.makcu_ack_timeout_ms,o.makcu_protocol);
+        makcu->connect();
+        std::cout<<"MAKCU connected: port="<<makcu->port()<<" baud="<<o.makcu_baud
+            <<" version="<<std::quoted(makcu->version())<<std::endl;
+    }
     ControlWorker worker(o.pid,[&](const Movement& m){
-        bool inject=o.enable_input && !should_stop() && !down(VK_LEFT) &&
+        bool inject=o.enable_input && o.mouse_backend!="none" && !should_stop() && !down(VK_LEFT) &&
             !down(VK_UP) && !down(VK_DOWN) && (down(VK_LBUTTON)||down(VK_RBUTTON));
         auto foreground=InputDiagnostics::foreground();
         DWORD input_error=ERROR_SUCCESS;
         if(inject)++attempt_count;
-        bool ok=!inject || dispatch_mouse(m,&input_error);
+        bool ok=!inject || (o.mouse_backend=="makcu" ? makcu->move(m) :
+            (o.mouse_backend=="none" ? true : dispatch_mouse(m,&input_error)));
         if(inject && ok)++sent_count;
         if(inject && !ok)++send_failures;
         auto recorded=SteadyClock::now();
@@ -262,6 +301,7 @@ int run_application(const AppOptions& o){
         return ok && bool(movement_log);
     });
     std::cout<<"Started: "<<(o.enable_input?"INPUT ENABLED, hold LMB/RMB":"dry run (no mouse injection)")
+        <<"; mouse_backend="<<o.mouse_backend
         <<"; selected "<<class_name(o.label)<<"; ESC/Ctrl+C to stop."<<std::endl;
     if(o.enable_input && !o.calibrated)std::cout<<"Using configured sensitivity scales without a desktop calibration file."<<std::endl;
     bool active=true,had_input_gate=false;
@@ -297,7 +337,7 @@ int run_application(const AppOptions& o){
     cv::Mat last_raw,last_rendered;
     ObjectDetector::BoxArray last_boxes;
     TargetUpdate last_target;
-    PreviewInfo info;info.label=label;info.input_enabled=o.enable_input;info.device=detector.device_name();
+    PreviewInfo info;info.label=label;info.input_enabled=o.enable_input;info.device=detector.device_name();info.mouse_backend=o.mouse_backend;
     info.max_lost=o.tracking.max_lost_frames;info.capture=offline?(still.empty()?"video":"image"):o.capture;
     auto milliseconds=[](SteadyClock::time_point from,SteadyClock::time_point to){
         return std::chrono::duration<double,std::milli>(to-from).count();
@@ -434,6 +474,8 @@ int run_application(const AppOptions& o){
     std::ofstream summary(fs::path(o.output)/"summary.json");
     summary<<"{\"mode\":"<<std::quoted(offline?"offline":"live")<<",\"capture\":"<<std::quoted(info.capture)
         <<",\"headless\":"<<(o.headless?"true":"false")<<",\"device\":"<<std::quoted(detector.device_name())
+        <<",\"mouse_backend\":"<<std::quoted(o.mouse_backend)
+        <<",\"makcu_port\":"<<std::quoted(o.mouse_backend=="makcu"?o.makcu_port:"")
         <<",\"label\":"<<label<<",\"frames\":"<<frame<<",\"elapsed_seconds\":"<<elapsed<<",\"fps\":"<<(elapsed>0?frame/elapsed:0)
         <<",\"empty_captures\":"<<empty_frames<<",\"capture_errors\":"<<errors<<",\"sent_count\":"<<sent_count
         <<",\"send_attempts\":"<<attempt_count<<",\"send_failures\":"<<send_failures

@@ -29,7 +29,9 @@ function Get-MenuPlan {
     $arguments = @()
     $description = $route.Name
     if ($Number -ge 1 -and $Number -le 4) {
-        $arguments = @('--capture',[string]$Settings.capture,'--monitor',[string]$Settings.monitor,'--size',[string]$Settings.size,'--label',[string]$route.Label)
+        $backend = if ($Settings.mouse_backend -in @('windows','makcu','none')) {[string]$Settings.mouse_backend} else {'windows'}
+        $arguments = @('--capture',[string]$Settings.capture,'--monitor',[string]$Settings.monitor,'--size',[string]$Settings.size,'--label',[string]$route.Label,'--mouse-backend',$backend)
+        if ($backend -eq 'makcu') { $port = if ($Settings.makcu_port) {[string]$Settings.makcu_port} else {'COM3'}; $baud = if ($Settings.makcu_baud) {[string]$Settings.makcu_baud} else {'115200'}; $arguments += @('--makcu-port',$port,'--makcu-protocol','ascii','--makcu-baud',$baud) }
         if ($route.Input) { $arguments += '--enable-input' }
     } elseif ($Number -eq 5 -or $Number -eq 6) {
         if (!$MediaPath) { throw '请先选择一个文件。' }
@@ -45,17 +47,24 @@ function Get-MenuPlan {
             $arguments += @('--capture',$Performance,'--monitor',[string]$Settings.monitor,'--size',[string]$Settings.size,'--seconds','8')
             $description = "$($Performance.ToUpper()) 端到端基准（8 秒）"
         }
-    } elseif ($Number -eq 8) { $arguments = @('--calibrate') }
+    } elseif ($Number -eq 8) {
+        $backend = if ($Settings.mouse_backend -in @('windows','makcu')) {[string]$Settings.mouse_backend} else {'windows'}
+        $arguments = @('--calibrate','--mouse-backend',$backend)
+        if ($backend -eq 'makcu') { $port = if ($Settings.makcu_port) {[string]$Settings.makcu_port} else {'COM3'}; $baud = if ($Settings.makcu_baud) {[string]$Settings.makcu_baud} else {'115200'}; $arguments += @('--makcu-port',$port,'--makcu-protocol','ascii','--makcu-baud',$baud) }
+    }
     [pscustomobject]@{number=$Number;name=$description;kind=$route.Kind;label=$route.Label;inputEnabled=$route.Input;arguments=[string[]]$arguments;performance=$Performance}
 }
 function Read-MenuSettings([string]$ProjectRoot) {
-    $defaults = [pscustomobject]@{ capture='gdi'; monitor=0; size=416 }
+    $defaults = [pscustomobject]@{ capture='gdi'; monitor=0; size=416; mouse_backend='windows'; makcu_port='COM3'; makcu_protocol='ascii'; makcu_baud=115200 }
     $path = Join-Path $ProjectRoot '.local/menu-settings.json'
     if (Test-Path -LiteralPath $path) {
         try {
             $value = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
             if ($value.capture -notin @('gdi','dxgi') -or $null -eq $value.monitor -or $null -eq $value.size -or [int]$value.monitor -lt 0 -or [int]$value.size -lt 32 -or [int]$value.size -gt 4096) { throw 'Invalid settings' }
-            return [pscustomobject]@{capture=[string]$value.capture;monitor=[int]$value.monitor;size=[int]$value.size}
+            $backend = if ($value.mouse_backend -in @('windows','makcu','none')) {[string]$value.mouse_backend} else {'windows'}
+            $port = if ($value.makcu_port) {[string]$value.makcu_port} else {'COM3'}
+            $baud = if ($value.makcu_baud) {[int]$value.makcu_baud} else {115200}
+            return [pscustomobject]@{capture=[string]$value.capture;monitor=[int]$value.monitor;size=[int]$value.size;mouse_backend=$backend;makcu_port=$port;makcu_protocol='ascii';makcu_baud=$baud}
         } catch { Write-Warning '菜单设置损坏，已采用 GDI / 显示器 0 / 416 像素。' }
     }
     return $defaults

@@ -23,3 +23,8 @@ max_age_ms: 100
 units_per_pixel_x: 1.0
 units_per_pixel_y: 1.0
 calibration_file: "config/calibration.yml"
+mouse_backend: windows
+makcu_port: "COM3"
+makcu_protocol: ascii
+makcu_baud: 115200
+makcu_ack_timeout_ms: 500

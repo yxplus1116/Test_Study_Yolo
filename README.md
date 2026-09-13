@@ -94,7 +94,17 @@ DXGI 会等待桌面新画面，因此静止桌面的计数可能很低：后来
 
 # 在自己的测试窗口中启用输出；按住鼠标左键或右键才允许移动
 .\scripts\run.ps1 --capture gdi --enable-input
+
+# 使用 MAKCU（USB2 对应 COM3；首次建议先用 ASCII 验证）
+.\scripts\run.ps1 --capture gdi --mouse-backend makcu --makcu-port COM3 --makcu-protocol ascii --makcu-baud 115200 --enable-input
+
+# 只探测 MAKCU，不加载模型、不移动鼠标
+.\scripts\run.ps1 --mouse-backend makcu --makcu-port COM3 --makcu-test
 ```
+
+MAKCU 模式会在启动时等待设备完成 USB CDC 重启，然后通过 USB2 的串口发送相对移动命令。USB2 同时只能被一个软件占用，请先关闭 MAKCU 网页控制台或其他 AIO 工具。正常工作还必须满足：USB1 已接到实际接收鼠标输入的目标机，USB3 已接入真实鼠标；MAKCU 本身不是独立的鼠标输出设备。菜单 8 的桌面标定会按照当前选择的鼠标后端执行：`windows` 使用 `SendInput`，`makcu` 使用串口 `km.move`。
+
+MAKCU 日志中的 `sent_count` 只表示 `WriteFile` 把命令交给了 Windows 串口驱动，并不代表板端已经解析、USB HID 已发出或目标程序已经响应。若串口能打开但鼠标不动，先运行 `--makcu-test` 检查端口，再用设备网页的串口终端发送 `km.version()`、`km.getpos()` 和 `km.move(20,0)`；确认 USB1/USB3 连接和固件初始化后再运行锁定控制。
 
 热键：左方向键暂停，右方向键恢复，上方向键选择类别 1，下方向键选择类别 0。ESC、Ctrl+C、关闭预览窗口均执行取消、唤醒和线程回收；构建引擎时也支持取消。程序仅输出相对移动，不自动按下或释放鼠标按钮。
 
